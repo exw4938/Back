@@ -3,6 +3,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+#define CONFIG config.cfg
+
 /// Loads the three values stored in the config into the program
 void loadConfig(char username[], char hostname[], char location, FILE* is);
 // The formatter for the remote backup system command
@@ -23,7 +25,7 @@ int main(int argc, char* argv[]){
         command[i]  = 0;
     }
 
-    fp = fopen("config.cfg", "r");
+    fp = fopen(CONFIG, "r");
     
     loadConfig(username, hostname, location, fp);
 
