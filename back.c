@@ -5,12 +5,12 @@
 
 /// Function for adding a file to be backed up
 void addFile(char* filename, Config* conf);
+void backupfile(Config* conf, char* filename);
 
 // The formatter for the remote backup system command
 const char* FORMATTER = "scp %s %s@%s:%s";
 
 int main(int argc, char* argv[]){
-    char command[1024];
     FILE* fp;
     fp = openConfig();
 
@@ -24,8 +24,7 @@ int main(int argc, char* argv[]){
         return 0;
     }
 
-    sprintf(command, FORMATTER, "test.txt", conf.username, conf.hostname, conf.location);
-    system(command);
+    backupfile(&conf, "test.txt");
 }
 
 /**
@@ -57,4 +56,16 @@ void addFile(char* filename, Config* conf){
     
     fprintf(backup, "%s", filename);
     fclose(backup);
+}
+
+/**
+ * Backs up the file to the remote server using scp.
+ *
+ * filename: the name of the file to be backed up
+ */
+void backupfile(Config* conf, char* filename){
+    char command[1024];
+
+    sprintf(command, FORMATTER, filename, (*conf).username, (*conf).hostname, (*conf).location);
+    system(command);
 }
