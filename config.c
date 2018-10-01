@@ -4,9 +4,6 @@
 #include <string.h>
 
 
-/// Const representing the name of the config file
-const char* CONFIG_FILE = "config.cfg";
-
 /**
  * Opens the (*conf)ig file and validates that it exists.
  * Returns a pointer to the stream that the (*conf)ig can be read from; returns
@@ -16,7 +13,7 @@ FILE* openConfig(){
     FILE* fp;
     fp = fopen(CONFIG_FILE, "r");
     if (!fp){
-        fprintf(stderr, "There was a problem reading the config file...");
+        fprintf(stderr, "There was a problem reading the config file...\n");
         exit(1);
     }
     return fp;

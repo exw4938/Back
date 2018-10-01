@@ -4,6 +4,10 @@
  * to load the data into memory
  */
 
+/// Const representing the name of the config file
+#define CONFIG_FILE  "config.cfg"
+#define BACKUP_FILE  ".backup"
+
 /// Structure stores all the information about the config
 struct config {
     char username[256];
@@ -14,8 +18,9 @@ struct config {
 
 typedef struct config Config;
 
-
 /// function to load the actual information
 void loadConfig(Config* conf, FILE* fp);
 /// loads the stream to read the config file from
 FILE* openConfig();
+
+
