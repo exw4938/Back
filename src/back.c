@@ -15,6 +15,8 @@ void addfile(char* filename, Config* conf);
 void backupfile(Config* conf, char* filename);
 /// Loads the .backup file and returns a pointer to the stream
 static FILE* loadbackup(FILE* backup, Config* conf, char* mode);
+/// Creates a temp tar file to store files specified in .backup
+int createtar(Config* conf);
 
 // The formatter for the remote backup system command
 const char* FORMATTER = "scp %s %s@%s:%s";
@@ -94,4 +96,15 @@ void backupfile(Config* conf, char* filename){
 
     sprintf(command, FORMATTER, filename, conf->username, conf->hostname, conf->location);
     system(command);
+}
+
+/**
+ * Creates a temporary tar archive in the user's home folder.
+ *
+ * conf: A pointer to the system wide config
+ *
+ * return: a 0 on success and 1 on failure
+ */
+int createtar(Config* conf){
+         
 }
