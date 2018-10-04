@@ -10,4 +10,4 @@ back: back.o config.o
 	$(CC) -o back back.o config.o
 
 clean:
-	rm *.o
+	rm *.o back
