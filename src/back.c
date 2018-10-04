@@ -3,9 +3,18 @@
 #include <string.h>
 #include "config.h"
 
+/// Definition for read string when opening a file stream
+#define READ   "r"
+/// Definition for append string when opening a file stream
+#define APPEND "a"
+/// Definition for write string when opening a file stream
+#define WRITE "w"
+
 /// Function for adding a file to be backed up
-void addFile(char* filename, Config* conf);
+void addfile(char* filename, Config* conf);
 void backupfile(Config* conf, char* filename);
+/// Loads the .backup file and returns a pointer to the stream
+static FILE* loadbackup(FILE* backup, Config* conf, char* mode);
 
 // The formatter for the remote backup system command
 const char* FORMATTER = "scp %s %s@%s:%s";
@@ -20,11 +29,36 @@ int main(int argc, char* argv[]){
     fclose(fp);
 
     if (argc > 2 && !strncmp(argv[1], "-a", 2)){
-        addFile(argv[2], &conf);
+        addfile(argv[2], &conf);
         return 0;
     }
 
     backupfile(&conf, "test.txt");
+}
+
+/**
+ * Loads the .backup file and returns a pointer to the file stream
+ *
+ * backup: the file stream to set equal to use
+ * conf: A pointer to the system wide config
+ * mode: the mode to read the .backup file in (APPEND, READ, WRITE)
+ *
+ * return: a pointer to the file stream of the .backup file
+ */
+static FILE* loadbackup(FILE* backup, Config* conf, char* mode){
+    char* backupfile = calloc(
+        strlen(BACKUP_FILE) + strlen(conf->homedirectory) + 1, sizeof(char));
+    
+    // The .backup file should be in the user's home directory
+    strcat(backupfile, conf->homedirectory);
+    strcat(backupfile, "/");
+    strcat(backupfile, BACKUP_FILE);
+
+    backup = fopen(backupfile, mode);
+
+    free(backupfile);
+
+    return backup;
 }
 
 /**
@@ -34,23 +68,15 @@ int main(int argc, char* argv[]){
  * conf: a pointer to the system wide config.
  * NOTE: The reason the config is not a global variable is for readability.
  */
-void addFile(char* filename, Config* conf){
+void addfile(char* filename, Config* conf){
+    FILE* backup;
 
-    char backupfile[strlen(BACKUP_FILE) + strlen(conf->homedirectory) + 1];
-    for (long unsigned int i = 0; i < sizeof(backupfile); i++)
-        backupfile[i] = 0;
-    
-    
-    // The .backup file should be in the user's home directory
-    strcat(backupfile, conf->homedirectory);
-    strcat(backupfile, "/");
-    strcat(backupfile, BACKUP_FILE);
+    backup = loadbackup(backup, conf, APPEND);
 
-    FILE* backup = fopen(backupfile, "a");
     // Check if the .backup file was loaded correctly
     if (!backup){
         fprintf(stderr, 
-            "There was an error accessing the .backup file: %s\n", backupfile);
+            "There was an error accessing the .backup file... \n");
         exit(1);
     }
     
