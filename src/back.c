@@ -36,13 +36,13 @@ int main(int argc, char* argv[]){
  */
 void addFile(char* filename, Config* conf){
 
-    char backupfile[strlen(BACKUP_FILE) + strlen((*conf).homedirectory) + 1];
+    char backupfile[strlen(BACKUP_FILE) + strlen(conf->homedirectory) + 1];
     for (long unsigned int i = 0; i < sizeof(backupfile); i++)
         backupfile[i] = 0;
     
     
     // The .backup file should be in the user's home directory
-    strcat(backupfile, (*conf).homedirectory);
+    strcat(backupfile, conf->homedirectory);
     strcat(backupfile, "/");
     strcat(backupfile, BACKUP_FILE);
 
@@ -66,6 +66,6 @@ void addFile(char* filename, Config* conf){
 void backupfile(Config* conf, char* filename){
     char command[1024];
 
-    sprintf(command, FORMATTER, filename, (*conf).username, (*conf).hostname, (*conf).location);
+    sprintf(command, FORMATTER, filename, conf->username, conf->hostname, conf->location);
     system(command);
 }
