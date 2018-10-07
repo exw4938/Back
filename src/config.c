@@ -19,10 +19,8 @@
  * return:
  *      Returns a pointer to an area in memory containing the new value
  */
-char* updateconfigvalue(char* value, const char* newvalue){
+char* updateconfigvalue(char* value, const char* newvalue);
 
-
-}
 
 /**
  * Saves the given config to a file. If the passed config is NULL this function
@@ -36,8 +34,33 @@ char* updateconfigvalue(char* value, const char* newvalue){
  *      Returns a 0 on successful operation and 1 on failure
  */
 int saveconfig(Config* conf){
+    FILE* fp = fopen(CONFIG_FILE, "w");
+    if (!fp){
+        fprintf(stderr, "There was an error opening the cofig file.");
+        fclose(fp);
+        return 1;
+    }
+   
+    //TODO This way of accessing each individual item in the structure seems
+    //too restricting. Possibly add element to Config structure with an array
+    //of **char pointing to each char*. This would allow for easy iteration
+    //through the items in the array, meaning this would be generalized.
+    // Put the cofig values in the file
+    // TODO add validation that these values are not just a single char or
+    // the null string
+    fprintf(fp, USERNAME ": %s\n", conf->username);
+    fprintf(fp, HOSTNAME ": %s\n", conf->hostname);
+    fprintf(fp, LOCATION ": %s\n", conf->location);
+    fprintf(fp, HOME ": %s\n", conf->home);
 
+    fclose(fp);
 
+    free(conf->username);
+    free(conf->hostname);
+    free(conf->location);
+    free(conf->home);
+
+    return 0;
 }
 
 /**
@@ -106,8 +129,7 @@ int getconfigvalue(Config* conf, char* inputline){
  *      Returns a 0 if the operation succeeded and a 1 if it failed
  */
 int loadconfig(){
-    FILE* fp;
-    fp = fopen(CONFIG_FILE, "r");
+    FILE* fp = fopen(CONFIG_FILE, "r");
     if (!fp){
         fprintf(stderr, "There was an error opening the cofig file.");
         fclose(fp);
@@ -128,6 +150,5 @@ int loadconfig(){
     
     fclose(fp);
     
-    printf("%s\n%s\n%s\n%s\n", g_conf.username, g_conf.hostname, g_conf.location, g_conf.home);
     return errorstate;
 }
