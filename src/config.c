@@ -19,7 +19,11 @@
  * return:
  *      Returns a pointer to an area in memory containing the new value
  */
-char* updateconfigvalue(char* value, const char* newvalue);
+char* updateconfigvalue(char* value, const char* newvalue){
+      value = (char*)realloc(value, strlen(newvalue) + 1);
+      strcpy(value, newvalue);
+      return value;
+}
 
 
 /**
