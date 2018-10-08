@@ -25,7 +25,5 @@ add_subdirectory("${PROJECT_SOURCE_DIR}/src")
 add_subdirectory("${PROJECT_SOURCE_DIR}/tests")
 
 include(CTest)
-
-set(BIN bin)
-
-add_test(BackRuns ${BIN}/back)
+#set(BIN bin)
+#add_test(BackRuns ${BIN}/back)
