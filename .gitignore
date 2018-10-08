@@ -1,3 +1,4 @@
-config.cfg
+config.yaml
 *.o
 back
+.backup
