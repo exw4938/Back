@@ -5,53 +5,129 @@
 
 
 /**
- * Opens the (*conf)ig file and validates that it exists.
- * Returns a pointer to the stream that the (*conf)ig can be read from; returns
- * null pointer if file could not be opened.
+ * Updates one of the values in the config. This includes reallocating
+ * its data.
+ *
+ * parameters:
+ *      value - A pointer to the config value to be changed. NOTE: This
+ *      function uses realloc so this pointer's integrity is not garunteed
+ *      after the function has run. Use the return value as the new value for
+ *      that pointer
+ *
+ *      newvalue - The value to update the current config value with
+ *
+ * return:
+ *      Returns a pointer to an area in memory containing the new value
  */
-FILE* openConfig(){
-    FILE* fp;
-    fp = fopen(CONFIG_FILE, "r");
-    if (!fp){
-        fprintf(stderr, "There was a problem reading the config file...\n");
-        exit(1);
-    }
-    return fp;
+char* updateconfigvalue(char* value, const char* newvalue){
+
+
 }
 
 /**
- * Loads the three values (username, hostname, location) from the (*conf)ig files
- * into program memory.
+ * Saves the given config to a file. If the passed config is NULL this function
+ * will use the static config initialized in this file. Also free's all of the
+ * data in the config structure.
  *
- * (*conf): The (*conf)ig structure to store the (*conf)ig information in
- * fp: The stream to read the file from
+ * parameters:
+ *      conf - The config to save to the config.cfg file
+ *
+ * return:
+ *      Returns a 0 on successful operation and 1 on failure
  */
-void loadConfig(Config* conf, FILE* fp){
+int saveconfig(Config* conf){
 
-    // TODO Add validation that the hostname provided in 'back setup' is valid
-    // TODO Add implementation of 'back setup'
-    // NOTE This might need generalization in a future iteration
-    // Gets the three values from the (*conf)ig
-    fgets((*conf).username, 256, fp);
-    fgets((*conf).hostname, 256, fp);
-    fgets((*conf).location, 256, fp);
-    fgets((*conf).homedirectory, 256, fp);
 
-    // Checks if the (*conf)ig file was read in correctly
-    if ((*conf).username[0] == 0 || (*conf).hostname[0] == 0 || 
-        (*conf).location[0] == 0 || (*conf).homedirectory[0] == 0){
-        fprintf(stderr, "There was a problem while reading the file."
-            "Run \"back setup\"to (re)(*conf)igure the program\n");
-        exit(1);
+}
+
+/**
+ * Helper function for loadconfig, takes a line of input read from the
+ * config.yaml file and sets the value of the passed conf object to the
+ * value specified by the file. Also allocates memory for the config value.
+ *
+ * parameters:
+ *      conf: A pointer to the config to return a pointer to
+ *      inputline: The line to process for config values
+ *
+ * return:
+ *      Returns a 0 if the operation succeeded and 1 if it failed
+ */
+int getconfigvalue(Config* conf, char* inputline){
+    char* token = strtok(inputline, ":");
+
+    // Get the token's corresponding value and remove leading whitespace
+    char* value = strtok(NULL, "\0");
+    while (value[0] == ' ')
+        value++;
+
+    int tokenlen = strlen(token);
+
+    // Checks which of the config values the line specifies
+    if (!strncmp(token, USERNAME, tokenlen)){
+
+        conf->username = (char*)malloc(strlen(value) + 1);
+        strcpy(conf->username, value);
+        return 0;
+
+    }else if (!strncmp(token, HOSTNAME, tokenlen)){
+
+        conf->hostname = malloc(strlen(value) + 1);
+        strcpy(conf->hostname, value);
+        return 0;
+
+    }else if (!strncmp(token, LOCATION, tokenlen)){
+
+        conf->location = malloc(strlen(value) + 1);
+        strcpy(conf->location, value);
+        return 0;
+
+    }else if (!strncmp(token, HOME, tokenlen)){
+
+        conf->home = malloc(strlen(value) + 1);
+        strcpy(conf->home, value);
+        return 0;
+
+    }else{
+
+        fprintf(stderr, "There was an error reading the config file. Invalid"
+            " config value: %s", inputline);
+        return 1;
+
+    }
+    
+}
+
+/**
+ * Loads the config file and stores it in the static config variable.
+ * Dynamically allocates memory for each of the strings in the config struct.
+ * Burden of freeing memory falls to calling function.
+ *
+ * return:
+ *      Returns a 0 if the operation succeeded and a 1 if it failed
+ */
+int loadconfig(){
+    FILE* fp;
+    fp = fopen(CONFIG_FILE, "r");
+    if (!fp){
+        fprintf(stderr, "There was an error opening the cofig file.");
+        fclose(fp);
+        return 1;
     }
 
-    // Removes any extraneous new line characters
-    if ((*conf).hostname[strlen((*conf).hostname) - 1] == '\n')
-        (*conf).hostname[strlen((*conf).hostname) - 1] = 0;
-    if ((*conf).location[strlen((*conf).location) - 1] == '\n')
-        (*conf).location[strlen((*conf).location) - 1] = 0;
-    if ((*conf).username[strlen((*conf).username) - 1] == '\n')
-        (*conf).username[strlen((*conf).username) - 1] = 0;
-    if ((*conf).homedirectory[strlen((*conf).homedirectory) - 1] == '\n')
-        (*conf).homedirectory[strlen((*conf).homedirectory) - 1] = 0;
+    char buffer[1024] = {0};
+    int bufferlen, errorstate = 0;
+
+    // Gets the values from the config
+    while (fgets(buffer, 1024, fp) && !errorstate){
+        bufferlen = strlen(buffer);
+        if (buffer[bufferlen - 1] == '\n'){
+            buffer[bufferlen - 1] = '\0';
+        }
+        errorstate = getconfigvalue(&g_conf, buffer);
+    }
+    
+    fclose(fp);
+    
+    printf("%s\n%s\n%s\n%s\n", g_conf.username, g_conf.hostname, g_conf.location, g_conf.home);
+    return errorstate;
 }

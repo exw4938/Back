@@ -9,8 +9,13 @@
 #define _CONFIG_H_
 
 /// Const representing the name of the config file
-#define CONFIG_FILE  "config.cfg"
+#define CONFIG_FILE  "config.yaml"
 #define BACKUP_FILE  ".backup"
+// Definitions for the four config values
+#define USERNAME "username"
+#define HOSTNAME "hostname"
+#define LOCATION "location"
+#define HOME "home"
 
 /// Structure stores all the information about the config
 struct config {
@@ -26,8 +31,8 @@ struct config {
 
 typedef struct config Config;
 
-// A version of the config
-static Config conf;
+// A global version of the config
+Config g_conf;
 
 /**
  * Loads the config file and stores it in the static config variable.
@@ -67,5 +72,20 @@ char* updateconfigvalue(char* value, const char* newvalue);
  *      Returns a 0 on successful operation and 1 on failure
  */
 int saveconfig(Config* conf);
+
+
+/**
+ * Helper function for loadconfig, takes a line of input read from the
+ * config.yaml file and sets the value of the passed conf object to the
+ * value specified by the file. Also allocates memory for the config value.
+ *
+ * parameters:
+ *      conf: A pointer to the config to return a pointer to
+ *      inputline: The line to process for config values
+ *
+ * return:
+ *      Returns a 0 if the operation succeeded and 1 if it failed
+ */
+int getconfigvalue(Config* conf, char* inputline);
 
 #endif
