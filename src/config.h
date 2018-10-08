@@ -9,7 +9,7 @@
 #define _CONFIG_H_
 
 /// Const representing the name of the config file
-#define CONFIG_FILE  "config.yaml"
+#define CONFIG_FILE  "config/config.yaml"
 #define BACKUP_FILE  ".backup"
 // Definitions for the four config values
 #define USERNAME "username"

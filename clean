@@ -1,0 +1,3 @@
+#!/bin/bash
+
+rm -rf backConfig.h CMakeCache.txt CMakeFiles/ cmake_install.cmake Makefile
