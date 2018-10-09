@@ -1,20 +1,20 @@
 
 include(CTest)
 set(ROOT "${PROJECT_SOURCE_DIR}/..")
-function(add_test_exec file)
-    add_executable(${file} ${file}.c)
-    target_include_directories(${file} PUBLIC "${PROJECT_SOURCE_DIR}/src")
-    target_link_libraries(${name} Back)
-    set_target_properties(${file} PROPERTIES
+function(add_test_exec name)
+    add_executable(${name} src/${name}.c)
+    target_include_directories(${name} PRIVATE "${CMAKE_CURRENT_LIST_DIR}/include")
+    target_link_libraries(${name} source)
+    set_target_properties(${name} PROPERTIES
         RUNTIME_OUTPUT_DIRECTORY "${ROOT}/build/tests"
     )
-    add_test(NAME ${file} COMMAND "${ROOT}/build/tests/${file}")
+    add_test(NAME ${name} COMMAND "${ROOT}/build/tests/${name}")
 endfunction()
 
-foreach(file IN ITEMS
-    test_run
+foreach(name IN ITEMS
+    test_config
     )
 
-    add_test_exec(${file})
+    add_test_exec(${name})
 
 endforeach()

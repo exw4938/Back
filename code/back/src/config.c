@@ -145,7 +145,7 @@ int getconfigvalue(Config* conf, char* inputline){
  * return:
  *      Returns a 0 if the operation succeeded and a 1 if it failed
  */
-int loadconfig(char* filename, Config* conf){
+extern int loadconfig(char* filename, Config* conf){
     FILE* fp = fopen(filename, "r");
     if (!fp){
         fprintf(stderr, "There was an error opening the cofig file.");
@@ -162,7 +162,7 @@ int loadconfig(char* filename, Config* conf){
         if (buffer[bufferlen - 1] == '\n'){
             buffer[bufferlen - 1] = '\0';
         }
-        errorstate = getconfigvalue(&g_conf, buffer);
+        errorstate = getconfigvalue(conf, buffer);
     }
     
     fclose(fp);

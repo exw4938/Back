@@ -19,8 +19,8 @@ const char* FORMATTER = "scp %s %s@%s:%s";
 int main(int argc, char* argv[]){
     Config conf;
     loadconfig(CONFIG_FILE, &conf);
-    updateconfigvalue(g_conf.username, "morpheous");
-    saveconfig(&g_conf);
+    updateconfigvalue(conf.username, "morpheous");
+    saveconfig(CONFIG_FILE, &conf);
     //printf("%s\n%s\n%s\n%s\n", g_conf.username, g_conf.hostname, g_conf.location, g_conf.home);
 }
 
