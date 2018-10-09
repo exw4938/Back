@@ -31,20 +31,18 @@ struct config {
 
 typedef struct config Config;
 
-// A global version of the config
-Config g_conf = {{0}, {0}, {0}, {0}};
-
 /**
- * Loads the config file and stores it in the static config variable.
+ * Loads the config file and stores it in the given config variable.
  * Dynamically allocates memory for each of the strings in the config struct.
  * Burden of freeing memory falls to calling function.
  * 
  * parameters:
  *      filename - The filepath of the file to load into memory
+ *      conf - the config to load the data into
  * return:
  *      Returns a 0 if the operation succeeded and a 1 if it failed
  */
-int loadconfig(char* filename);
+int loadconfig(char* filename, Config* conf);
 
 /**
  * Updates one of the values in the config. This includes reallocating
@@ -77,6 +75,13 @@ char* updateconfigvalue(char* value, const char* newvalue);
  */
 int saveconfig(char* filename, Config* conf);
 
+/**
+ * Frees all the data allocated for each string in the config file
+ *
+ * parameters:
+ *      conf - The config to free the data for
+ */
+void freeconfig(Config* conf);
 
 /**
  * Helper function for loadconfig, takes a line of input read from the

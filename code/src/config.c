@@ -25,6 +25,18 @@ char* updateconfigvalue(char* value, const char* newvalue){
       return value;
 }
 
+/**
+ * Frees all the data allocated for each string in the config file
+ *
+ * parameters:
+ *      conf - The config to free the data for
+ */
+void freeconfig(Config* conf){
+    free(conf->username);
+    free(conf->hostname);
+    free(conf->location);
+    free(conf->home);
+}
 
 /**
  * Saves the given config to a file. If the passed config is NULL this function
@@ -59,11 +71,8 @@ int saveconfig(char* filename, Config* conf){
     fprintf(fp, HOME ": %s\n", conf->home);
 
     fclose(fp);
-
-    free(conf->username);
-    free(conf->hostname);
-    free(conf->location);
-    free(conf->home);
+    
+    freeconfig(conf);
 
     return 0;
 }
@@ -126,16 +135,17 @@ int getconfigvalue(Config* conf, char* inputline){
 }
 
 /**
- * Loads the config file and stores it in the static config variable.
+ * Loads the config file and stores it in the given config variable.
  * Dynamically allocates memory for each of the strings in the config struct.
  * Burden of freeing memory falls to calling function.
  * 
  * parameters:
  *      filename - The filepath of the file to load into memory
+ *      conf - the config to load the data into
  * return:
  *      Returns a 0 if the operation succeeded and a 1 if it failed
  */
-int loadconfig(char* filename){
+int loadconfig(char* filename, Config* conf){
     FILE* fp = fopen(filename, "r");
     if (!fp){
         fprintf(stderr, "There was an error opening the cofig file.");
