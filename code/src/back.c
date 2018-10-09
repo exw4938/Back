@@ -17,7 +17,7 @@ void backupfile(Config* conf, char* filename);
 const char* FORMATTER = "scp %s %s@%s:%s";
 
 int main(int argc, char* argv[]){
-    loadconfig();
+    loadconfig(CONFIG_FILE);
     updateconfigvalue(g_conf.username, "morpheous");
     saveconfig(&g_conf);
     //printf("%s\n%s\n%s\n%s\n", g_conf.username, g_conf.hostname, g_conf.location, g_conf.home);

@@ -32,13 +32,14 @@ char* updateconfigvalue(char* value, const char* newvalue){
  * data in the config structure.
  *
  * parameters:
- *      conf - The config to save to the config.cfg file
+ *      filename - the name of the file to save the config data to
+ *      conf - The config to save to the config.yaml file
  *
  * return:
  *      Returns a 0 on successful operation and 1 on failure
  */
-int saveconfig(Config* conf){
-    FILE* fp = fopen(CONFIG_FILE, "w");
+int saveconfig(char* filename, Config* conf){
+    FILE* fp = fopen(filename, "w");
     if (!fp){
         fprintf(stderr, "There was an error opening the cofig file.");
         fclose(fp);
@@ -128,12 +129,14 @@ int getconfigvalue(Config* conf, char* inputline){
  * Loads the config file and stores it in the static config variable.
  * Dynamically allocates memory for each of the strings in the config struct.
  * Burden of freeing memory falls to calling function.
- *
+ * 
+ * parameters:
+ *      filename - The filepath of the file to load into memory
  * return:
  *      Returns a 0 if the operation succeeded and a 1 if it failed
  */
-int loadconfig(){
-    FILE* fp = fopen(CONFIG_FILE, "r");
+int loadconfig(char* filename){
+    FILE* fp = fopen(filename, "r");
     if (!fp){
         fprintf(stderr, "There was an error opening the cofig file.");
         fclose(fp);

@@ -32,16 +32,19 @@ struct config {
 typedef struct config Config;
 
 // A global version of the config
-Config g_conf;
+Config g_conf = {{0}, {0}, {0}, {0}};
 
 /**
  * Loads the config file and stores it in the static config variable.
  * Dynamically allocates memory for each of the strings in the config struct.
- *
+ * Burden of freeing memory falls to calling function.
+ * 
+ * parameters:
+ *      filename - The filepath of the file to load into memory
  * return:
  *      Returns a 0 if the operation succeeded and a 1 if it failed
  */
-int loadconfig();
+int loadconfig(char* filename);
 
 /**
  * Updates one of the values in the config. This includes reallocating
@@ -66,12 +69,13 @@ char* updateconfigvalue(char* value, const char* newvalue);
  * data in the config structure.
  *
  * parameters:
- *      conf - The config to save to the config.cfg file
+ *      filename - the name of the file to save the config data to
+ *      conf - The config to save to the config.yaml file
  *
  * return:
  *      Returns a 0 on successful operation and 1 on failure
  */
-int saveconfig(Config* conf);
+int saveconfig(char* filename, Config* conf);
 
 
 /**
