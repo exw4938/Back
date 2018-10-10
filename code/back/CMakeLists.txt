@@ -7,6 +7,7 @@ set(SRCS
 )
 
 add_executable(back ${SRCS})
+target_compile_options(back PRIVATE -ggdb -Wall -Wextra -pedantic)
 add_library(source SHARED ${SRCS})
 target_include_directories(source PUBLIC ${CMAKE_CURRENT_LIST_DIR}/include)
 target_include_directories(back PRIVATE ${CMAKE_CURRENT_LIST_DIR}/include)
