@@ -1,4 +1,5 @@
 #include <assert.h>
+#include <stdio.h>
 #include "config.h"
 
 static char* testconfigs[] = 
@@ -24,25 +25,89 @@ static int values[][4] =
     {0, 0, 0, 0}
 };
 
-int test_updateconfigvalue();
-int test_saveconfig();
+void resetconfig(Config* conf){
+    conf->username = 0;
+    conf->hostname = 0;
+    conf->location = 0;
+    conf->home = 0;
+}
+
+int test_updateconfigvalue(){
+    Config conf = {0, 0, 0, 0};
+    loadconfig("configs/normal.yaml", &conf);
+    char* newusername = "test_user";
+    char* newhostname = "test_host_name";
+    char* newlocation = "test_location";
+    char* newhome = "test_home";
+    
+    char* extralongusername = "this is an extra long username to test realloc";
+    char* extralonghostname = "this is an extra long hostname to test realloc";
+    char* extralonglocation = "this is an extra long location to test realloc";
+    char* extralonghome = "this is an extra long home to test realloc";
+
+    conf.username = updateconfigvalue(conf.username, newusername);
+    conf.hostname = updateconfigvalue(conf.hostname, newhostname);
+    conf.location = updateconfigvalue(conf.location, newlocation);
+    conf.home = updateconfigvalue(conf.home, newhome);
+
+    assert(!strcmp(conf.username, newusername));
+    assert(!strcmp(conf.hostname, newhostname));
+    assert(!strcmp(conf.location, newlocation));
+    assert(!strcmp(conf.home, newhome));
+
+
+    conf.username = updateconfigvalue(conf.username, extralongusername);
+    conf.hostname = updateconfigvalue(conf.hostname, extralonghostname);
+    conf.location = updateconfigvalue(conf.location, extralonglocation);
+    conf.home = updateconfigvalue(conf.home, extralonghome);
+
+    assert(!strcmp(conf.username, extralongusername));
+    assert(!strcmp(conf.hostname, extralonghostname));
+    assert(!strcmp(conf.location, extralonglocation));
+    assert(!strcmp(conf.home, extralonghome));
+
+    return 0;
+}
+
+int test_saveconfig(){
+    char* username = "username";
+    char* hostname = "hostname";
+    char* location = "location";
+    char* home = "home";
+
+    Config conf = {username, hostname, location, home};
+    
+    saveconfig("test.yaml", &conf);
+    resetconfig(&conf);
+    loadconfig("test.yaml", &conf);
+    
+    assert(!strcmp(conf.username, username));
+    assert(!strcmp(conf.hostname, hostname));
+    assert(!strcmp(conf.location, location));
+    assert(!strcmp(conf.home, home));
+    return 0;
+}
+
 int test_getconfigvalue();
 
 int test_loadconfig(){
     Config conf = {0, 0, 0, 0};
 
-    for (int i = 0; i < sizeof(testconfigs); i++){
+    for (int i = 0; i < (int)(sizeof(testconfigs)/sizeof(char*)); i++){
         assert(!loadconfig(testconfigs[i], &conf));
-        assert(!conf.username == values[i][0] ? 1 : 0);
-        assert(!conf.hostname == values[i][1] ? 1 : 0);
-        assert(!conf.location == values[i][2] ? 1 : 0);
-        assert(!conf.home == values[i][3] ? 1 : 0);
+        assert(!conf.username == (!values[i][0] ? 0 : 1));
+        assert(!conf.hostname == (!values[i][1] ? 0 : 1));
+        assert(!conf.location == (!values[i][2] ? 0 : 1));
+        assert(!conf.home == (!values[i][3] ? 0 : 1));
+        resetconfig(&conf);
     }
+    return 0;
 }
 
 int main(){
-    assert(test_loadconfig());
-    //assert(test_updateconfigvalue());
-    //assert(test_saveconfig());
+    test_loadconfig();
+    test_updateconfigvalue();
+    test_saveconfig();
     //assert(test_getconfigvalue());
+    return 0;
 }
