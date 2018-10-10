@@ -57,7 +57,7 @@ int saveconfig(char* filename, Config* conf){
         fclose(fp);
         return 1;
     }
-   
+    
     //TODO This way of accessing each individual item in the structure seems
     //too restricting. Possibly add element to Config structure with an array
     //of **char pointing to each char*. This would allow for easy iteration
@@ -148,7 +148,8 @@ int getconfigvalue(Config* conf, char* inputline){
 extern int loadconfig(char* filename, Config* conf){
     FILE* fp = fopen(filename, "r");
     if (!fp){
-        fprintf(stderr, "There was an error opening the cofig file.");
+        fprintf(stderr, "There was an error opening the config file: %s.", 
+            filename);
         fclose(fp);
         return 1;
     }
