@@ -1,0 +1,19 @@
+#!/bin/bash
+
+if [ $# -ge 0 ]
+then
+
+cmake code
+make
+ctest
+
+fi
+
+if [ "$1" == "-v" ]
+then
+
+cmake code
+make
+ctest -V --output-on-failure
+
+fi
