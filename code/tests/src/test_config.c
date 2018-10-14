@@ -105,6 +105,7 @@ int test_loadconfig(){
 }
 
 int main(){
+    puts("Test\n12\ntest");
     test_loadconfig();
     test_updateconfigvalue();
     test_saveconfig();

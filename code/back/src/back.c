@@ -1,27 +1,69 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <unistd.h>
 #include "config.h"
 #include "backConfig.h"
 
-/// Definition for read string when opening a file stream
-#define READ   "r"
-/// Definition for append string when opening a file stream
-#define APPEND "a"
-/// Definition for write string when opening a file stream
-#define WRITE "w"
+//Definitions for argument values
+#define GET_FILE 1
+#define LIST_FILE 3
+#define DATE 5
+#define ADD 9
 
 void backupfile(Config* conf, char* filename);
+void printusage();
 
 // The formatter for the remote backup system command
 const char* FORMATTER = "scp %s %s@%s:%s";
 
 int main(int argc, char* argv[]){
-    Config conf;
-    loadconfig(CONFIG_FILE, &conf);
-    updateconfigvalue(conf.username, "morpheous");
-    saveconfig(CONFIG_FILE, &conf);
-    //printf("%s\n%s\n%s\n%s\n", g_conf.username, g_conf.hostname, g_conf.location, g_conf.home);
+    /// Whether or not a date was specified
+    int date_flag = 0;
+    /// Whether or not a main command has been processed yet
+    int command_flag = 0;
+
+    int opt, arglen, arg_flag;
+    // The filename and date to use if they are specified
+    char *filename, *date;
+
+
+    while((opt = getopt(argc, argv, "g:l::a:d:")) != -1){
+        switch(opt){
+            case 'g':
+                arglen = strlen(optarg);
+                filename = malloc(sizeof(char) * arglen + 1);
+                strncpy(filename, optarg, arglen + 1);
+                arg_flag += GET_FILE;
+                break;
+            case 'l':
+                if (optarg != 0){
+                    arglen = strlen(optarg);
+                    date = malloc(sizeof(char) * arglen + 1);
+                    strncpy(date, optarg, arglen + 1);
+                    arg_flag += DATE;
+                }
+                arg_flag += LIST_FILE;
+                break;
+            case 'a':
+                arglen = strlen(optarg);
+                filename = malloc(sizeof(char) * arglen + 1);
+                strncpy(filename, optarg, arglen + 1);
+                arg_flag += ADD;
+                break;
+            case 'd':
+                arglen = strlen(optarg);
+                date = malloc(sizeof(char) * arglen + 1);
+                strncpy(date, optarg, arglen);
+                break;
+            default:
+                fprintf(stderr, "Invalid arguments: ");
+                printusage();
+                break;
+        }
+    }
+
+
 }
 
 
@@ -35,4 +77,11 @@ void backupfile(Config* conf, char* filename){
 
     sprintf(command, FORMATTER, filename, conf->username, conf->hostname, conf->location);
     system(command);
+}
+
+/**
+ * Prints a usage message detailing command line arguments
+ */
+void printusage(){
+
 }
