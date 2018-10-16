@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <unistd.h>
+#include <time.h>
 #include "config.h"
 #include "backConfig.h"
 
@@ -13,6 +14,9 @@
 
 void backupfile(Config* conf, char* filename);
 void printusage();
+/// Adds all users specified files into a tar file and moves it to the server
+int run_backup(Config* conf);
+
 
 // The formatter for the remote backup system command
 const char* FORMATTER = "scp %s %s@%s:%s";
@@ -63,7 +67,11 @@ int main(int argc, char* argv[]){
                 break;
         }
     }
-
+    
+    switch(arg_flag){
+        case 9:
+            
+    }
 }
 
 
@@ -107,7 +115,11 @@ int run_backup(Config* conf){
     }
     
     char command[1024] = {0};
-    sprintf(command, TAR_COMMAND, "out", conf->home);
+
+    time_t t = time(0);
+    char* date = ctime(&t);
+
+    sprintf(command, TAR_COMMAND, date, conf->home);
     return system(command);      
 }
 
