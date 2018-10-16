@@ -16,6 +16,8 @@ void backupfile(Config* conf, char* filename);
 void printusage();
 /// Adds all users specified files into a tar file and moves it to the server
 int run_backup(Config* conf);
+/// Adds the file specified by name to the .backup file
+int add_file(Config* conf, char* filename);
 
 
 // The formatter for the remote backup system command
@@ -68,9 +70,14 @@ int main(int argc, char* argv[]){
         }
     }
     
+    Config conf = {0};
+    loadconfig("config.yaml", &conf);
+    int ret_val;
     switch(arg_flag){
-        case 9:
-            
+        case ADD:
+             ret_val = add_file(&conf, filename);
+             freeconfig(&conf);
+             return ret_val;
     }
 }
 
@@ -106,11 +113,11 @@ int run_backup(Config* conf){
     //our own error message in stead of tar's
     FILE* backup = fopen(backupfile, "r");
     if (!backup){
-        fprintf(stderr, "There was an error opening the config file.\n");
+        fprintf(stderr, "There was an error finding the .backup file.\n");
         free(backupfile);
         return 1;
     }else{
-        fclose(backupfile);
+        fclose(backup);
         free(backupfile);
     }
     
@@ -121,6 +128,43 @@ int run_backup(Config* conf){
 
     sprintf(command, TAR_COMMAND, date, conf->home);
     return system(command);      
+}
+
+/**
+ * Adds the file specified by filename to the .backup file
+ *
+ * parameters:
+ *      filename - The name and FULL PATH of the file to add
+ *      conf - A pointer to the config information
+ *
+ * return:
+ *      Returns a 0 if the operation suceeded and 1 if it failed.
+ */
+int add_file(Config* conf, char* filename){
+    //Check to make sure the file actually exists
+    FILE* tmp = fopen(filename, "r");
+    if (!tmp){
+        fprintf(stderr, "Sorry the file %s does not exist.", filename);
+        return 1;
+    }
+    fclose(tmp);
+
+    char* backupfile = malloc(strlen(conf->home) + 9);
+    strcat(backupfile, conf->home);
+    strcat(backupfile, "/.backup");
+    
+    FILE* backup = fopen(backupfile, "a");
+    if (!backup){
+        fprintf(stderr, "There was an issue opening the .backup file");
+        free(backupfile);
+        return 1;
+    }
+    
+    fputs(filename, backup);
+    fclose(backup);
+
+    free(backupfile);
+    return 0;
 }
 
 /**
