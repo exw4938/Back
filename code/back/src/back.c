@@ -16,6 +16,7 @@ void printusage();
 
 // The formatter for the remote backup system command
 const char* FORMATTER = "scp %s %s@%s:%s";
+const char* TAR_COMMAND = "tar -cvf %s.tar -T %s/.backup\0";
 
 int main(int argc, char* argv[]){
     /// Whether or not a date was specified
@@ -63,7 +64,6 @@ int main(int argc, char* argv[]){
         }
     }
 
-
 }
 
 
@@ -77,6 +77,38 @@ void backupfile(Config* conf, char* filename){
 
     sprintf(command, FORMATTER, filename, conf->username, conf->hostname, conf->location);
     system(command);
+}
+
+/**
+ * Runs a full backup by collecting all the values in the .backup file,
+ * placing them in a tar archive, then transferring them to the remote server.
+ *
+ * parameters:
+ *      conf - A pointer to the config file
+ *
+ * return:
+ *      Returns 0 if the operation suceeded 1 if it failed
+ */
+int run_backup(Config* conf){
+    char* backupfile = malloc(strlen(conf->home) + 9);
+    strcat(backupfile, conf->home);
+    strcat(backupfile, "/.backup");
+
+    //Essentially checks if the .backup file exists so we can print
+    //our own error message in stead of tar's
+    FILE* backup = fopen(backupfile, "r");
+    if (!backup){
+        fprintf(stderr, "There was an error opening the config file.\n");
+        free(backupfile);
+        return 1;
+    }else{
+        fclose(backupfile);
+        free(backupfile);
+    }
+    
+    char command[1024] = {0};
+    sprintf(command, TAR_COMMAND, "out", conf->home);
+    return system(command);      
 }
 
 /**
