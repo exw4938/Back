@@ -4,6 +4,7 @@ set(ROOT "${PROJECT_SOURCE_DIR}/..")
 set(SRCS
     src/back.c
     src/config.c
+    src/local.c
 )
 
 add_executable(back ${SRCS})
