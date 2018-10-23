@@ -14,6 +14,7 @@ endfunction()
 
 foreach(name IN ITEMS
     test_config
+    test_local
     )
 
     add_test_exec(${name})

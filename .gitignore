@@ -1,3 +1,4 @@
 config.yaml
 *.o
 .backup
+test_local_config.yaml

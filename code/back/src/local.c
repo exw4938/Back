@@ -85,18 +85,19 @@ int add_file(Config* conf, char* filename){
     }
     fclose(tmp);
 
-    char* backupfile = malloc(strlen(conf->home) + 9);
+    char* backupfile = calloc(sizeof(char), strlen(conf->home) + 9);
     strcat(backupfile, conf->home);
     strcat(backupfile, "/.backup");
-    
+
     FILE* backup = fopen(backupfile, "a");
     if (!backup){
-        fprintf(stderr, "There was an issue opening the .backup file");
+        fprintf(stderr, "There was an issue opening the .backup file\n");
         free(backupfile);
         return 1;
     }
     
     fputs(filename, backup);
+    fputc('\n', backup);
     fclose(backup);
 
     free(backupfile);
