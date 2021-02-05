@@ -1,0 +1,21 @@
+name: Check Commits
+
+on:
+  pull_request:
+    branches: [ main ]
+    types: [opened, synchronize, reopened, edited]
+  pull_request_review:
+    types: [ submitted ]
+
+jobs:
+  check_commit:
+    runs-on: ubuntu-latest
+    name: Check commit style
+    steps:
+      - name: Checkout the repo
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+      - name: Check commit style
+        uses: cyberark/enforce-commit-style@v1
