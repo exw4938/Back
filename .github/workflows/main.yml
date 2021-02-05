@@ -1,13 +1,9 @@
 name: Check Commits
 
 on:
-  push:
-    branches: [ master ]
   pull_request:
     branches: [ master ]
     types: [opened, synchronize, reopened, edited]
-  pull_request_review:
-    types: [ submitted ]
 
 
 jobs:
@@ -21,4 +17,16 @@ jobs:
           fetch-depth: 0
 
       - name: Check commit style
-        uses: cyberark/enforce-commit-style@v1
+        uses: cyberark/enforce-commit-style@test
+
+  rebase:
+    runs-on: ubuntu-latest
+    name: Rebase
+    steps:
+      - name: Checkout the repo
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+      - name: Check commit style
+        uses: cyberark/enforce-rebase@v2
